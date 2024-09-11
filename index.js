@@ -12,7 +12,7 @@ let meta = {
 };
 let metas = [meta];
 
-// cadastra metas
+// cadastra as metas
 const cadastrarMeta = async () => {
     const meta = await input({
         message: "digite a sua meta:"
@@ -30,12 +30,35 @@ const cadastrarMeta = async () => {
     });
 }
 
-// lista metas
+// lista as metas
 const listarMetas = async () => {
     const respostas = await checkbox({
         message: "use as setas para mudar de meta, o espaço para marcar/desmarcar, e o enter para finalizar.",
-        choices: []
+        // pega tudo o que tem no metas
+        choices: [...metas],
+        instructions: false,
     });
+
+    if (respostas.length == 0) {
+        console.log("nenhuma meta selecionada.");
+        return;
+    }
+
+    // desmarcando o que foi desmarcado
+    metas.forEach ((m) => {
+        m.checked = false;
+    });
+
+    // verifica se foi a meta selecionada
+    respostas.forEach ((resposta) => {
+        const meta = metas.find((m) => {
+            return m.value == resposta;
+        });
+
+        meta.checked = true;
+    });
+
+    console.log("meta(s) marcada(s) como concluída(s).");
 }
 
 // começa a aplicação
