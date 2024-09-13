@@ -5,6 +5,9 @@ const {
     checkbox
 } = require('@inquirer/prompts');
 
+// armazena mensagens
+let mensagem = "boas vindas ao app de metas.";
+
 // lista de metas (primeira feita à mão)
 let meta = {
     value: "tomar 3L de água por dia.",
@@ -19,7 +22,7 @@ const cadastrarMeta = async () => {
     });
 
     if (meta.length == 0) {
-        console.log("a meta não pode ser vazia.");
+        mensagem = "a meta não pode ser vazia.";
         return // cadastrarMeta() caso queira que a pessoa escreva algo
     }
 
@@ -28,6 +31,8 @@ const cadastrarMeta = async () => {
         value: meta,
         checked: false
     });
+
+    mensagem = "meta cadastrada com sucesso.";
 }
 
 // lista as metas
@@ -45,7 +50,7 @@ const listarMetas = async () => {
     });
 
     if (respostas.length == 0) {
-        console.log("nenhuma meta selecionada.");
+        mensagem = "nenhuma meta selecionada.";
         return;
     }
 
@@ -58,7 +63,7 @@ const listarMetas = async () => {
         meta.checked = true;
     });
 
-    console.log("meta(s) marcada(s) como concluída(s).");
+    mensagem = "meta(s) marcada(s) como concluída(s).";
 }
 
 // lista metas realizadas
@@ -69,7 +74,7 @@ const metasRealizadas = async () => {
     });
 
     if (realizadas.length == 0) {
-        console.log("não existem metas realizadas. :(");
+        mensagem = "não existem metas realizadas. :(";
         return;
     }
 
@@ -86,7 +91,7 @@ const metasAbertas = async () => {
     });
 
     if (abertas.length == 0) {
-        console.log("não existem metas abertas. :D");
+        mensagem = "não existem metas abertas. :D";
         return;
     };
 
@@ -98,7 +103,7 @@ const metasAbertas = async () => {
 
 // deleta as metas
 const deletarMetas = async () => {
-    const metasDesmarcadas = metas.map(() => {
+    const metasDesmarcadas = metas.map((meta) => {
         return {
             value: meta.value,
             checked: false
@@ -113,7 +118,7 @@ const deletarMetas = async () => {
     });
 
     if (metasParaDeletar.length == 0) {
-        console.log("nenhuma meta para deletar.");
+        mensagem = "nenhuma meta para deletar.";
         return;
     }
 
@@ -124,7 +129,18 @@ const deletarMetas = async () => {
         });
     });
 
-    console.log("meta(s) deletada(s) com sucesso.");
+    mensagem = "meta(s) deletada(s) com sucesso.";
+};
+
+// sistema de mensagens
+const mostrarMensagem = () => {
+    console.clear();
+
+    if (mensagem != "") {
+        console.log(mensagem);
+        console.log(""); // pula uma linha
+        mensagem = "";
+    };
 };
 
 // começa a aplicação
@@ -133,6 +149,7 @@ const start = async () => {
 
     // cria o menu
     while (true) {
+        mostrarMensagem();
 
         // await para esperar a resposta do usuário (async/promises)
         // o select exige um "message" e um "choices" (array de objetos)
@@ -169,7 +186,6 @@ const start = async () => {
         switch (opcao) {
             case "cadastrar":
                 await cadastrarMeta();
-                console.log(metas);
                 break;
             case "listar":
                 await listarMetas();
