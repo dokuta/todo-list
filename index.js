@@ -61,6 +61,24 @@ const listarMetas = async () => {
     console.log("meta(s) marcada(s) como concluída(s).");
 }
 
+// lista metas realizadas
+const metasRealizadas = async () => {
+    // filter = HOF que precisa ser passada como função
+    const realizadas = metas.filter((meta) => {
+        return meta.checked;
+    });
+
+    if (realizadas.length == 0) {
+        console.log("não existem metas realizadas. :(");
+        return;
+    }
+
+    await select ({
+        message: "Metas Realizadas",
+        choices: [...realizadas]
+    });
+};
+
 // começa a aplicação
 // async pois existe o await dentro (async/promises)
 const start = async () => {
@@ -78,7 +96,11 @@ const start = async () => {
                 },
                 {
                     name: "listar metas",
-                    value: "listar"
+                    value: "listar",
+                },
+                {
+                    name: "metas realizadas",
+                    value: "realizar"
                 },
                 {
                     name: "sair",
@@ -95,6 +117,9 @@ const start = async () => {
                 break;
             case "listar":
                 await listarMetas();
+                break;
+            case "realizar":
+                await metasRealizadas();
                 break;
             case "sair":
                 console.log("até mais.");
