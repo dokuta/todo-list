@@ -39,15 +39,15 @@ const listarMetas = async () => {
         instructions: false,
     });
 
-    if (respostas.length == 0) {
-        console.log("nenhuma meta selecionada.");
-        return;
-    }
-
     // desmarcando o que foi desmarcado
     metas.forEach ((m) => {
         m.checked = false;
     });
+
+    if (respostas.length == 0) {
+        console.log("nenhuma meta selecionada.");
+        return;
+    }
 
     // verifica se foi a meta selecionada
     respostas.forEach ((resposta) => {
