@@ -5,15 +5,30 @@ const {
     checkbox
 } = require('@inquirer/prompts');
 
+// para salvar as metas
+const fs = require("fs").promises;
+
 // armazena mensagens
 let mensagem = "boas vindas ao app de metas.";
 
-// lista de metas (primeira feita à mão)
-let meta = {
-    value: "tomar 3L de água por dia.",
-    checked: false,
+// armazena as metas
+let metas;
+
+// carrega as metas, se houver
+const carregarMetas = async () => {
+    try {
+        const dados = await fs.readFile("goals.json", "utf-8");
+        metas = JSON.parse(dados); // converte o json em array javascript
+    } catch (erro) {
+        metas = [];
+    }
 };
-let metas = [meta];
+
+// salva as metas
+const salvarMetas = async () => {
+    // converte o array javascript em json
+    await fs.writeFile("goals.json", JSON.stringify(metas, null, 2));
+};
 
 // cadastra as metas
 const cadastrarMeta = async () => {
@@ -37,6 +52,12 @@ const cadastrarMeta = async () => {
 
 // lista as metas
 const listarMetas = async () => {
+    // verifica se há metas
+    if (metas.length == 0) {
+        mensagem = "não existem metas.";
+        return;
+    }
+
     const respostas = await checkbox({
         message: "use as setas para mudar de meta, o espaço para marcar/desmarcar, e o enter para finalizar.",
         // pega tudo o que tem no metas
@@ -68,6 +89,12 @@ const listarMetas = async () => {
 
 // lista metas realizadas
 const metasRealizadas = async () => {
+    // verifica se há metas
+    if (metas.length == 0) {
+        mensagem = "não existem metas.";
+        return;
+    }
+
     // filter = HOF que precisa ser passada como função
     const realizadas = metas.filter((meta) => {
         return meta.checked;
@@ -86,6 +113,12 @@ const metasRealizadas = async () => {
 
 // lista metas abertas
 const metasAbertas = async () => {
+    // verifica se há metas
+    if (metas.length == 0) {
+        mensagem = "não existem metas.";
+        return;
+    }
+
     const abertas = metas.filter((meta) => {
         return !meta.checked; // ou: meta.checked != true;
     });
@@ -103,6 +136,12 @@ const metasAbertas = async () => {
 
 // deleta as metas
 const deletarMetas = async () => {
+    // verifica se há metas
+    if (metas.length == 0) {
+        mensagem = "não existem metas.";
+        return;
+    }
+    
     const metasDesmarcadas = metas.map((meta) => {
         return {
             value: meta.value,
@@ -147,9 +186,14 @@ const mostrarMensagem = () => {
 // async pois existe o await dentro (async/promises)
 const start = async () => {
 
+    // carrega as metas salvas, se houver
+    // await pois leva um tempo para abrir o arquivo e ler
+    await carregarMetas();
+
     // cria o menu
     while (true) {
         mostrarMensagem();
+        await salvarMetas(); // await pois leva um tempo para abrir o arquivo e salvar
 
         // await para esperar a resposta do usuário (async/promises)
         // o select exige um "message" e um "choices" (array de objetos)
